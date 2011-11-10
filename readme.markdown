@@ -1,4 +1,4 @@
-**pygrametl: A Powerful Programming Framework for Extract–Transform–Load Programmers**
+**pygrametl: A Powerful Programming Framework for Extract-Transform-Load Programmers**
 
 unofficial public repository for [http://pygrametl.org/][2] project
 
