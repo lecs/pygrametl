@@ -51,7 +51,7 @@ from pygrametl.FIFODict import FIFODict
 
 __author__ = "Christian Thomsen"
 __maintainer__ = "Christian Thomsen"
-__version__ = '0.2.0.1'
+__version__ = '0.2.0.2'
 __all__ = ['Dimension', 'CachedDimension', 'SlowlyChangingDimension',
            'SnowflakedDimension', 'FactTable', 'BatchFactTable',
            'BulkFactTable', 'SubprocessFactTable']
@@ -1322,20 +1322,31 @@ class FactTable(object):
     def _after_insert(self, row, namemapping):
         pass
 
+    def _emptyfacttonone(self, argdict):
+        """Return None if the given argument only contains None values, 
+           otherwise return the given argument
+        """ 
+        for k in self.keyrefs:
+            if argdict[k] is not None:
+                return argdict
+        return None
+
     def lookup(self, keyvalues, namemapping={}):
         """Lookup a fact from the given key values. Return key and measure vals.
+
+           Return None if no fact is found.
 
            Arguments:
            - keyvalues: a dict at least containing values for all keys
            - namemapping: an optional namemapping (see module's documentation)
         """
-        res = self._before_lookup(self, keyvalues, namemapping)
+        res = self._before_lookup(keyvalues, namemapping)
         if res:
-            return res
+            return self._emptyfacttonone(res)
         self.targetconnection.execute(self.lookupsql, keyvalues, namemapping)
         res = self.targetconnection.fetchone(self.all)
         self._after_lookup(keyvalues, namemapping, res)
-        return res
+        return self._emptyfacttonone(res)
 
     def _before_lookup(self, keyvalues, namemapping):
         return None
